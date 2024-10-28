@@ -9,10 +9,13 @@ import {
 import { useNavigate } from "react-router-dom"
 import { useRegisterMutation } from "../slices/api/authApiSlice"
 import { useMessage } from "../context/MessageContext"
-import { useAuth } from "../context/UserContext"
+import { useDispatch } from "react-redux"
+import { setCredentials } from "../slices/userSlice"
+import { BACKEND_URL } from "../constants"
 
 const RegisterPage = () => {
-  const { setAuthenticated } = useAuth()
+  const dispatch = useDispatch()
+
   const navigate = useNavigate()
   const { showMessage } = useMessage()
   const [register, { isLoading }] = useRegisterMutation()
@@ -36,11 +39,20 @@ const RegisterPage = () => {
     }
     try {
       const res = await register(values).unwrap()
-      setAuthenticated(res)
+      dispatch(setCredentials({ ...res }))
       showMessage("Register successful!", "success")
       navigate("/")
     } catch (err) {
-      showMessage(err?.data?.errors, "error")
+      console.log(err)
+      showMessage(err?.data?.message, "error")
+    }
+  }
+
+  const handleGoogleAuth = () => {
+    try {
+      window.location.href = `${BACKEND_URL}/auth/google/callback`
+    } catch (err) {
+      showMessage("Something went wrong", "error")
     }
   }
 
@@ -130,7 +142,11 @@ const RegisterPage = () => {
               Login
             </span>
           </div>
-          <Button icon={<GoogleOutlined />} className={"google-btn"}>
+          <Button
+            icon={<GoogleOutlined />}
+            className={"google-btn"}
+            onClick={handleGoogleAuth}
+          >
             {" "}
             Sign Up with Google
           </Button>

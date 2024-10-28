@@ -18,7 +18,6 @@ import Missing from "./components/exceptionPages/Missing.jsx"
 import PrivateRoutes from "./components/PrivateRoutes.jsx"
 import RegisterPage from "./pages/RegisterPage.jsx"
 import LoginPage from "./pages/LoginPage.jsx"
-import ResetPasswordPage from "./pages/ResetPasswordPage.jsx"
 import Unauthorized from "./components/exceptionPages/Unauthorized.jsx"
 import HomePage from "./pages/HomePage.jsx"
 
@@ -27,25 +26,14 @@ const router = createBrowserRouter(
     <>
       {/* Public Routes */}
       <Route element={<App />}>
-        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/reset-password/:userId/:token"
-          element={<ResetPasswordPage />}
-        />
       </Route>
 
       {/* Private Routes */}
-      <Route element={<PrivateRoutes />}>
-        <Route element={<App />}></Route>
+      <Route element={<App />}>
+        <Route path="/" element={<HomePage />} />
       </Route>
-
-      <Route
-        element={
-          <RequireAuth allowedRoles={["ROLE_ADMIN", "ROLE_CONSULTANT"]} />
-        }
-      ></Route>
 
       <Route path="/server-error" element={<ServerError />} />
       <Route path="/unauthorized" element={<Unauthorized />} />

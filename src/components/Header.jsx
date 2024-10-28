@@ -1,51 +1,46 @@
 import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../context/UserContext"
 import { useLogoutMutation } from "../slices/api/authApiSlice"
 import { useMessage } from "../context/MessageContext"
 import { Button, Dropdown, Flex, Space } from "antd"
-import {
-  UpOutlined,
-  DownOutlined,
-  UserOutlined,
-  GoogleOutlined,
-  LoginOutlined,
-} from "@ant-design/icons"
+import { DownOutlined, UserOutlined } from "@ant-design/icons"
+import { useDispatch, useSelector } from "react-redux"
+import { logout } from "../slices/userSlice"
 
 const Header = () => {
   const navigate = useNavigate()
-  const { localAuth, clearAuthentication } = useAuth()
+  const dispatch = useDispatch()
+
+  const { userInfo } = useSelector((state) => state.user)
+
   const { showMessage } = useMessage()
-  const [logout] = useLogoutMutation()
+  const [logoutApi] = useLogoutMutation()
+
   const logoutHandler = async () => {
     try {
-      await logout().unwrap()
-      showMessage("Logout Successful", "success")
-      clearAuthentication()
+      await logoutApi().unwrap()
+      dispatch(logout())
       navigate("/login")
-    } catch (err) {
-      showMessage(err?.data?.errors || "Could not perform operation", "error")
+      showMessage("Logged out successfully", "success")
+    } catch (error) {
+      showMessage("Something went wrong", "error")
     }
   }
   const items = [
     {
       key: "1",
-      label: <p onClick={() => navigate("/profile")}>Profile</p>,
-    },
-    {
-      key: "2",
       label: <p onClick={logoutHandler}>Logout</p>,
       danger: true,
     },
   ]
   return (
-    <nav style={{ padding: "1rem 2rem" }} className="bgSecColor">
+    <nav style={{ padding: "1rem 2rem" }} className="bgPrimColor">
       <div className="flexContainer">
         <div className="flexContainer">
           <Link to="/" className="navLink">
             Todo App
           </Link>
         </div>
-        {localAuth?.name ? (
+        {userInfo?.name ? (
           <div className="flexContainer cursor-pointer">
             <Dropdown
               menu={{
@@ -56,7 +51,7 @@ const Header = () => {
               <Flex>
                 <p className="userText">
                   <UserOutlined />
-                  {localAuth?.name.split(" ")[0]}
+                  {userInfo?.name.split(" ")[0]}
                 </p>
                 <DownOutlined style={{ color: "white" }} />
               </Flex>

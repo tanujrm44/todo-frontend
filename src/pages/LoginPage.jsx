@@ -4,33 +4,50 @@ import { UserOutlined, LockOutlined, GoogleOutlined } from "@ant-design/icons"
 import { useNavigate } from "react-router-dom"
 import { useLoginMutation } from "../slices/api/authApiSlice"
 import { useMessage } from "../context/MessageContext"
-import { useAuth } from "../context/UserContext"
+import { BACKEND_URL } from "../constants"
+import { useSelector, useDispatch } from "react-redux"
+import { setCredentials } from "../slices/userSlice"
 
 const LoginPage = () => {
-  const { setAuthenticated } = useAuth()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { showMessage } = useMessage()
   const [login, { isLoading }] = useLoginMutation()
+  const { userInfo } = useSelector((state) => state.user)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   })
-
+  console.log(userInfo)
   // useEffect(() => {
   //   if (localStorage.getItem("auth")) {
   //     navigate("/")
   //   }
   // }, [])
+  // useEffect(() => {
+  //   if (userInfo) {
+  //     navigate("/")
+  //   }
+  // }, [navigate, userInfo])
 
   const onFinish = async (values) => {
     setFormData(values)
     try {
       const res = await login(values).unwrap()
-      setAuthenticated(res)
+      dispatch(setCredentials({ ...res }))
       showMessage("Login successful!", "success")
       navigate("/")
     } catch (err) {
+      console.log(err)
       showMessage(err?.data?.errors, "error")
+    }
+  }
+
+  const handleGoogleAuth = () => {
+    try {
+      window.location.href = `${BACKEND_URL}/auth/google/callback`
+    } catch (err) {
+      showMessage("Something went wrong", "error")
     }
   }
 
@@ -93,7 +110,11 @@ const LoginPage = () => {
               Sign Up
             </span>
           </div>
-          <Button icon={<GoogleOutlined />} className={"google-btn"}>
+          <Button
+            icon={<GoogleOutlined />}
+            className={"google-btn"}
+            onClick={handleGoogleAuth}
+          >
             {" "}
             Login with Google
           </Button>

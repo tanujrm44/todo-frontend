@@ -6,6 +6,7 @@
 
 body {
   font-family: "Inter", sans-serif !important;
+  background-color: #f9fafb;
 }
 
 .heading {
@@ -59,7 +60,7 @@ body {
 }
 
 .bgSecColor {
-  background-color: #3173f5;
+  background-color: #5696f5;
 }
 
 .flexContainer {
@@ -122,4 +123,28 @@ body {
 
 .flex-grow {
   flex-grow: 1;
+}
+
+.todo {
+  background-color: #d2e6fa;
+  margin-top: 1rem;
+}
+
+.todo-header {
+  background-color: #5696f5;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+
+.todo-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: end;
+}
+
+.markDone {
+  font-size: 1.5rem;
+  color: green;
+  cursor: pointer;
 }
